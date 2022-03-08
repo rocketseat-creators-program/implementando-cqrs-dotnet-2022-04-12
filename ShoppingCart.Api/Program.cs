@@ -1,3 +1,5 @@
+using LiteDB;
+
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +20,11 @@ builder.Services.AddDbContextPool<ShoppingCartContext>(options =>
     }
 });
 
+builder.Services.AddScoped<ILiteDatabase, LiteDatabase>(c => new LiteDatabase("UserBaskets.db"));
+builder.Services.AddScoped<UserBasketContext>();
+
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IUserBasketRepository, UserBasketRepository>();
+builder.Services.AddScoped<IUserBasketRepository, DocumentUserBasketRepository>();
 
 builder.Services.AddMediatR(typeof(Response).Assembly);
 
