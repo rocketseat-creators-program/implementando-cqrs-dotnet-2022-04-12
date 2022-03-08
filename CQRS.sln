@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingCart.Api", "Shoppin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingCart.Shared", "ShoppingCart.Shared\ShoppingCart.Shared.csproj", "{31B87E5F-5FA2-4B4C-8AD9-F003752FD21F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingCart.Application", "ShoppingCart.Application\ShoppingCart.Application.csproj", "{2788D678-56D2-48F7-AF1E-3BBDC4AD58BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{31B87E5F-5FA2-4B4C-8AD9-F003752FD21F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31B87E5F-5FA2-4B4C-8AD9-F003752FD21F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31B87E5F-5FA2-4B4C-8AD9-F003752FD21F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2788D678-56D2-48F7-AF1E-3BBDC4AD58BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2788D678-56D2-48F7-AF1E-3BBDC4AD58BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2788D678-56D2-48F7-AF1E-3BBDC4AD58BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2788D678-56D2-48F7-AF1E-3BBDC4AD58BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

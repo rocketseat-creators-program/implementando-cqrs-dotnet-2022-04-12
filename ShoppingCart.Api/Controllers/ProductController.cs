@@ -1,46 +1,48 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
 
-using ShoppingCart.Infrastructure.Data;
+using Microsoft.AspNetCore.Mvc;
+
+using ShoppingCart.Application;
+using ShoppingCart.Application.Commands;
+using ShoppingCart.Application.Queries;
 using ShoppingCart.Shared.DTO;
-
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ShoppingCart.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Consumes(Application.Json)]
-[Produces(Application.Json)]
+[Consumes(System.Net.Mime.MediaTypeNames.Application.Json)]
+[Produces(System.Net.Mime.MediaTypeNames.Application.Json)]
 public class ProductController : ControllerBase
 {
-    private readonly IProductRepository _repository;
+    private readonly IMediator _mediator;
 
-    public ProductController(IProductRepository repository)
+    public ProductController(IMediator mediator)
     {
-        _repository = repository;
+        _mediator = mediator;
     }
 
     [HttpGet(Name = nameof(GetAllProducts))]
     [ProducesResponseType(typeof(IEnumerable<ProductDTO>), 200)]
     public async Task<IActionResult> GetAllProducts()
     {
-        return Ok(await _repository.GetAllProductsAsync());
+        return Ok(await _mediator.Send(new GetAllProducts()));
     }
 
     [HttpGet("{id:int}", Name = nameof(GetProductById))]
     [ProducesResponseType(typeof(ProductDTO), 200)]
     public async Task<IActionResult> GetProductById(int id)
     {
-        return Ok(await _repository.GetProductByIdAsync(id));
+        return Ok(await _mediator.Send(new GetProductById(id)));
     }
 
     [HttpPost(Name = nameof(CreateProduct))]
     [ProducesResponseType(200)]
     public async Task<IActionResult> CreateProduct(ProductDTO product)
     {
-        int id = await _repository.CreateProductAsync(product);
+        Response<int>? response = await _mediator.Send(new CreateProduct(product));
 
-        return Ok(id);
+        return Ok(response.Result);
     }
 
     [HttpPut(Name = nameof(UpdateProduct))]
@@ -48,9 +50,9 @@ public class ProductController : ControllerBase
     [ProducesResponseType(404)]
     public async Task<IActionResult> UpdateProduct(ProductDTO product)
     {
-        bool success = await _repository.UpdateProductAsync(product);
+        Response? response = await _mediator.Send(new UpdateProduct(product));
 
-        if (!success)
+        if (!response.Success)
         {
             return NotFound();
         }
@@ -63,9 +65,9 @@ public class ProductController : ControllerBase
     [ProducesResponseType(404)]
     public async Task<IActionResult> DeleteProduct(int id)
     {
-        bool success = await _repository.DeleteProductAsync(id);
+        Response? response = await _mediator.Send(new DeleteProduct(id));
 
-        if (!success)
+        if (!response.Success)
         {
             return NotFound();
         }

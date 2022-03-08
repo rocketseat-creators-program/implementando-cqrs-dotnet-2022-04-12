@@ -1,5 +1,8 @@
+using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
+using ShoppingCart.Application;
 using ShoppingCart.Infrastructure.Data;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
@@ -18,6 +21,7 @@ builder.Services.AddDbContextPool<ShoppingCartContext>(options =>
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserBasketRepository, UserBasketRepository>();
 
+builder.Services.AddMediatR(typeof(Response).Assembly);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

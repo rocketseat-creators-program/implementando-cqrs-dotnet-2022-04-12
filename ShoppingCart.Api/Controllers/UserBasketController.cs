@@ -1,37 +1,38 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
 
-using ShoppingCart.Infrastructure.Data;
+using Microsoft.AspNetCore.Mvc;
+
+using ShoppingCart.Application.Commands;
+using ShoppingCart.Application.Queries;
 using ShoppingCart.Shared.DTO;
-
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ShoppingCart.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Consumes(Application.Json)]
-[Produces(Application.Json)]
+[Consumes(System.Net.Mime.MediaTypeNames.Application.Json)]
+[Produces(System.Net.Mime.MediaTypeNames.Application.Json)]
 public class UserBasketController : ControllerBase
 {
-    private readonly IUserBasketRepository _repository;
+    private readonly IMediator _mediator;
 
-    public UserBasketController(IUserBasketRepository repository)
+    public UserBasketController(IMediator mediator)
     {
-        _repository = repository;
+        _mediator = mediator;
     }
 
     [HttpGet("{id:guid}", Name = nameof(GetUserBasketById))]
     [ProducesResponseType(typeof(UserBasketDTO), 200)]
     public async Task<IActionResult> GetUserBasketById(Guid id)
     {
-        return Ok(await _repository.GetBasketByIdAsync(id));
+        return Ok(await _mediator.Send(new GetUserBasketById(id)));
     }
 
     [HttpPost(Name = nameof(Created))]
     [ProducesResponseType(typeof(Guid), 200)]
     public async Task<IActionResult> CreateUserBasket()
     {
-        return Ok(await _repository.CreateBasketAsync());
+        return Ok(await _mediator.Send(new CreateUserBasket()));
     }
 
 
@@ -40,9 +41,9 @@ public class UserBasketController : ControllerBase
     [ProducesResponseType(404)]
     public async Task<IActionResult> AddUserBasketItem(UserBasketItemDTO item)
     {
-        bool success = await _repository.AddItemToBasketAsync(item);
+        Application.Response? response = await _mediator.Send(new AddItemToUserBasket(item));
 
-        if (!success)
+        if (!response.Success)
         {
             return NotFound();
         }
@@ -55,9 +56,9 @@ public class UserBasketController : ControllerBase
     [ProducesResponseType(404)]
     public async Task<IActionResult> UpdateUserBasketItem(UserBasketItemDTO item)
     {
-        bool success = await _repository.UpdateBasketItemAsync(item);
+        Application.Response? response = await _mediator.Send(new UpdateUserBasketItem(item));
 
-        if (!success)
+        if (!response.Success)
         {
             return NotFound();
         }
