@@ -1,9 +1,14 @@
+
+
+using FluentValidation.AspNetCore;
+
 using LiteDB;
 
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
+using ShoppingCart.Api.Behaviors;
 using ShoppingCart.Application;
 using ShoppingCart.Infrastructure.Data;
 
@@ -26,9 +31,19 @@ builder.Services.AddScoped<UserBasketContext>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserBasketRepository, DocumentUserBasketRepository>();
 
+builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(typeof(Program).Assembly));
 builder.Services.AddMediatR(typeof(Response).Assembly);
 
-builder.Services.AddControllers();
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>)); builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(FluentValidationBehavior<,>)); builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+
+
+builder.Services.AddControllers()
+.ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -38,9 +38,14 @@ public class ProductController : ControllerBase
 
     [HttpPost(Name = nameof(CreateProduct))]
     [ProducesResponseType(200)]
-    public async Task<IActionResult> CreateProduct(ProductDTO product)
+    public async Task<IActionResult> CreateProduct([FromBody] ProductDTO product)
     {
         Response<int>? response = await _mediator.Send(new CreateProduct(product));
+
+        if (!response.Success)
+        {
+            return BadRequest(response.Errors);
+        }
 
         return Ok(response.Result);
     }
@@ -48,13 +53,13 @@ public class ProductController : ControllerBase
     [HttpPut(Name = nameof(UpdateProduct))]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> UpdateProduct(ProductDTO product)
+    public async Task<IActionResult> UpdateProduct([FromBody] ProductDTO product)
     {
         Response? response = await _mediator.Send(new UpdateProduct(product));
 
         if (!response.Success)
         {
-            return NotFound();
+            return BadRequest(response.Errors);
         }
 
         return NoContent();
