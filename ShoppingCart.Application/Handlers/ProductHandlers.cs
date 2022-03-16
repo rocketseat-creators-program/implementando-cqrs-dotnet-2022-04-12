@@ -1,6 +1,7 @@
 ﻿using MediatR;
 
 using ShoppingCart.Application.Commands;
+using ShoppingCart.Application.Notifications;
 using ShoppingCart.Application.Queries;
 using ShoppingCart.Infrastructure.Data;
 using ShoppingCart.Shared.DTO;
@@ -15,10 +16,13 @@ public class ProductHandlers : IRequestHandler<GetAllProducts, Response<IEnumera
 {
     private readonly IProductRepository _repository;
 
-    public ProductHandlers(IProductRepository repository)
+    public ProductHandlers(IProductRepository repository, IMediator mediator)
     {
         _repository = repository;
+        _mediator = mediator;
     }
+
+    private readonly IMediator _mediator;
 
     public async Task<Response<IEnumerable<ProductDTO>>> Handle(GetAllProducts request, CancellationToken cancellationToken)
     {
@@ -50,10 +54,23 @@ public class ProductHandlers : IRequestHandler<GetAllProducts, Response<IEnumera
 
     public async Task<Response> Handle(UpdateProduct request, CancellationToken cancellationToken)
     {
-        return new Response()
+
+        ProductDTO? product = await _repository.GetProductByIdAsync(request.Product.Id);
+        Response? response = new Response()
         {
             Success = await _repository.UpdateProductAsync(request.Product)
         };
+
+        if (response.Success && product.UnitPrice != request.Product.UnitPrice)
+        {
+
+            _mediator.Publish(new PriceUpdated()
+            {
+                ProductId = request.Product.Id,
+                NewPrice = request.Product.UnitPrice
+            });
+        }
+        return response;
     }
 
     public async Task<Response> Handle(DeleteProduct request, CancellationToken cancellationToken)

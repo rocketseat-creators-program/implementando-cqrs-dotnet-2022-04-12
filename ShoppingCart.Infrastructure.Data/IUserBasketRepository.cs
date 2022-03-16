@@ -8,4 +8,5 @@ public interface IUserBasketRepository
     Task<Guid> CreateBasketAsync();
     Task<UserBasketDTO> GetBasketByIdAsync(Guid id);
     Task<bool> UpdateBasketItemAsync(UserBasketItemDTO item);
+    Task<bool> UpdateProductPrice(int productId, decimal newPrice);
 }

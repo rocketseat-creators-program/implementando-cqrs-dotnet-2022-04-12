@@ -103,4 +103,21 @@ public class DocumentUserBasketRepository : IUserBasketRepository
 
         return Task.FromResult(true);
     }
+
+    public Task<bool> UpdateProductPrice(int productId, decimal newPrice)
+    {
+        IEnumerable<UserBasket>? baskets = _context.Baskets.FindAll();
+        foreach (UserBasket? basket in baskets)
+        {
+            if (basket.Items?.Any(y => y.Product?.Id == productId) ?? false)
+            {
+                UserBasketItem? item = basket.Items.Single(x => x.Product.Id == productId);
+                item.Product.UnitPrice = newPrice;
+
+                _context.Baskets.Update(basket);
+            }
+        }
+
+        return Task.FromResult(true);
+    }
 }

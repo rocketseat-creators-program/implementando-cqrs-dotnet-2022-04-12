@@ -113,4 +113,9 @@ public class UserBasketRepository : IUserBasketRepository
 
         return true;
     }
+
+    public Task<bool> UpdateProductPrice(int productId, decimal newPrice)
+    {
+        throw new NotImplementedException();
+    }
 }
