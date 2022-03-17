@@ -44,7 +44,7 @@ public class ProductController : ControllerBase
 
         if (!response.Success)
         {
-            return BadRequest(response.Errors);
+            return ValidationProblem(new ValidationProblemDetails(response.Errors));
         }
 
         return Ok(response.Result);
@@ -59,7 +59,7 @@ public class ProductController : ControllerBase
 
         if (!response.Success)
         {
-            return BadRequest(response.Errors);
+            return ValidationProblem(new ValidationProblemDetails(response.Errors));
         }
 
         return NoContent();

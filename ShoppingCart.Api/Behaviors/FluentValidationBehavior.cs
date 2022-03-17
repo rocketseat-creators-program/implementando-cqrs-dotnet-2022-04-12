@@ -24,7 +24,7 @@ public class FluentValidationBehavior<TRequest, TResponse> : IPipelineBehavior<T
             .Where(f => f != null)
             .ToList();
 
-        return failures.Any()
+        return failures.Any(x => !x.IsValid)
             ? Errors(failures)
             : next();
     }

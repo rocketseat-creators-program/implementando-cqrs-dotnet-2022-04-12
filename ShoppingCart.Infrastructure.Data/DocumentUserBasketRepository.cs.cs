@@ -65,6 +65,8 @@ public class DocumentUserBasketRepository : IUserBasketRepository
             Id = basket.Id,
             Items = basket.Items.Select(x => new UserBasketItemDTO()
             {
+                Id = x.Id,
+                BasketId = basket.Id,
                 Quantity = x.Quantity,
                 Product = new ProductDTO()
                 {
@@ -93,6 +95,8 @@ public class DocumentUserBasketRepository : IUserBasketRepository
         if (item.Quantity > 0)
         {
             basket.Items.Single(x => x.Product.Id == item.Product.Id).Quantity = item.Quantity;
+            basket.Items.Single(x => x.Product.Id == item.Product.Id).Product.UnitPrice = item.Product.UnitPrice;
+            basket.Items.Single(x => x.Product.Id == item.Product.Id).Product.Name = item.Product.Name;
         }
         else
         {
@@ -104,7 +108,7 @@ public class DocumentUserBasketRepository : IUserBasketRepository
         return Task.FromResult(true);
     }
 
-    public Task<bool> UpdateProductPrice(int productId, decimal newPrice)
+    public async Task<bool> UpdateProductPrice(int productId, decimal newPrice)
     {
         IEnumerable<UserBasket>? baskets = _context.Baskets.FindAll();
         foreach (UserBasket? basket in baskets)
@@ -112,12 +116,20 @@ public class DocumentUserBasketRepository : IUserBasketRepository
             if (basket.Items?.Any(y => y.Product?.Id == productId) ?? false)
             {
                 UserBasketItem? item = basket.Items.Single(x => x.Product.Id == productId);
-                item.Product.UnitPrice = newPrice;
-
-                _context.Baskets.Update(basket);
+                await UpdateBasketItemAsync(new UserBasketItemDTO()
+                {
+                    BasketId = basket.Id,
+                    Quantity = item.Quantity,
+                    Product = new ProductDTO()
+                    {
+                        Id = productId,
+                        Name = item.Product.Name,
+                        UnitPrice = newPrice
+                    }
+                });
             }
         }
 
-        return Task.FromResult(true);
+        return true;
     }
 }
